@@ -4,6 +4,7 @@ import env
 import os
 import wrangle as w
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
 
 def check_file_exists(fn, query, url):
     """
@@ -65,16 +66,22 @@ def wrangle_zillow():
     df = w.get_zillow()
     
     #rename columns
-    df = df.rename(columns={'bedroomcnt': 'rooms'
-                        , 'bathroomcnt': 'bath'
+    df = df.rename(columns={'bedroomcnt': 'bedrooms'
+                        , 'bathroomcnt': 'bathrooms'
                         , 'calculatedfinishedsquarefeet': 'sqft'
                         , 'taxvaluedollarcnt':'taxvalue'
                         ,'yearbuilt': 'built'
                         , 'taxamount':'tax'})
+    # change fips codes to county name
+    df['fips'] = df['fips'].replace([6037.0, 6059.0, 6111.0],['LA','Orange','Ventura']).astype(str)
+
     #move my target variable taxvalue to the 1st column in the dataframe
     column_to_move = df.pop("taxvalue")
     df.insert(0, "taxvalue", column_to_move)
     df
+     # Create dummy variables for the species column
+    dummy_df = pd.get_dummies(df['fips'], drop_first=True)
+    df = pd.concat([df, dummy_df], axis=1)
     #drop all nulls
     df = df.dropna()
     
@@ -146,3 +153,38 @@ def wrangle_zillow3():
     df = w.remove_outliers(df, exclude_column='fips', threshold=3)
 
     return df
+
+def scaled_df(train, validate, test):
+
+    X_train = train[['bedrooms','bathrooms','sqft','built','tax','Orange','Ventura']]
+    X_validate = validate[['bedrooms','bathrooms','sqft','built','tax','Orange','Ventura']]
+    X_test = test[['bedrooms','bathrooms','sqft','built','tax','Orange','Ventura']]
+
+    y_train = train.taxvalue
+    y_validate = validate.taxvalue
+    y_test = test.taxvalue
+
+    #making our scaler
+    scaler = MinMaxScaler()
+    #fitting our scaler 
+    # AND!!!!
+    #using the scaler on train
+    X_train_scaled = scaler.fit_transform(X_train)
+    #using our scaler on validate
+    X_validate_scaled = scaler.transform(X_validate)
+    #using our scaler on test
+    X_test_scaled = scaler.transform(X_test)
+
+    # Convert the array to a DataFrame
+    df_X_train_scaled = pd.DataFrame(X_train_scaled)
+    X_train_scaled = df_X_train_scaled.rename(columns={0: 'bedrooms', 1: 'bathrooms', 2: 'sqft', 3: 'built', 4: 'tax', 5: 'Orange', 6:'Ventura'})
+
+    # Convert the array to a DataFrame
+    df_X_validate_scaled = pd.DataFrame(X_validate_scaled)
+    X_validate_scaled = df_X_validate_scaled.rename(columns={0: 'bedrooms', 1: 'bathrooms', 2: 'sqft', 3: 'built', 4: 'tax', 5: 'Orange', 6:'Ventura'})
+    
+    # Convert the array to a DataFrame
+    df_X_test_scaled = pd.DataFrame(X_test_scaled)
+    X_test_scaled = df_X_test_scaled.rename(columns={0: 'bedrooms', 1: 'bathrooms', 2: 'sqft', 3: 'built', 4: 'tax', 5: 'Orange', 6:'Ventura'})
+    
+    return X_train_scaled, X_validate_scaled, X_test_scaled, y_train, y_validate, y_test
