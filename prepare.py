@@ -1,75 +1,58 @@
-import acquire as acq
 import pandas as pd
+import numpy as np
+
+
+import wrangle as w
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
 
-def prep_iris():
-
-    #Load the iris data
-    iris = acq.get_iris_data()
-
-    # Drop the unnecessary columns
-    iris = iris.drop(columns=['species_id', 'measurement_id'])
-
-    # Rename the species_name column
-    iris = iris.rename(columns={'species_name': 'species'})
-
-    # Create dummy variables for the species column
-    dummy_df = pd.get_dummies(iris['species'], drop_first=True)
-    iris = pd.concat([iris, dummy_df], axis=1)
-
-    return iris
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
-def prep_titanic():
-   
-    # Load the titanic data
-    titanic = acq.get_titanic_data()
-    
-    # Drop unnecessary columns
-    titanic = titanic.drop(columns=['deck', 'embark_town', 'class'])
-    #change pclass to an object
-    #titanic['pclass'] = titanic['pclass'].astype(object)
-    # Create dummy variables
-    dummy_cols = ['sex', 'embarked']
-    dummy_df = pd.get_dummies(titanic[dummy_cols], drop_first=True)
-    titanic = pd.concat([titanic, dummy_df], axis=1)
-
-    return titanic
-
-
-def prep_telco():
-    # Load the telco data
-    telco = acq.get_telco_churn()
-    # Drop unnecessary columns
-    telco.drop(columns=['internet_service_type_id','contract_type_id','payment_type_id'])
-
-    #Encode 
-    telco['gender_encoded'] = telco['gender'].replace({'Female': 0, 'Male': 1})
-    telco['senior_citizen_encoded'] = (telco['senior_citizen'] == 1).astype(int)
-    telco['partner_encoded'] = telco['partner'].replace({'Yes': 1, 'No': 0})
-    telco['dependents_encoded'] = telco['dependents'].replace({'Yes': 1, 'No': 0})
-    telco['phone_service_encoded'] = telco['phone_service'].replace({'Yes': 1, 'No': 0})
-    telco['paperless_billing_encoded'] = telco['paperless_billing'].replace({'Yes': 1, 'No': 0})
-    telco['churn_encoded'] = telco['churn'].replace({'Yes': 1, 'No': 0})
-    telco['total_charges'] = telco['total_charges'].replace(' ', 0).astype(float)
-
-    #dummy variables
-    dummy_cols = ['contract_type','internet_service_type','payment_type', 'multiple_lines', 'online_security','online_backup','device_protection','tech_support','streaming_tv','streaming_movies']
-    dummy_df = pd.get_dummies(telco[dummy_cols], drop_first=True)
-    telco = pd.concat([telco, dummy_df], axis=1)
-
-    return telco
-#split function
-def split_data(df, target):
+def split_data(df):
     '''
-    take in a DataFrame and target variable. return train, validate, and test DataFrames; stratify on target variable.
+    take in a DataFrame and target variable. return train, validate, and test DataFrames.
     return train, validate, test DataFrames.
     '''
-    train_validate, test = train_test_split(df, test_size=.2, random_state=123, stratify=df[target])
+    train_validate, test = train_test_split(df, test_size=.2, random_state=123)
     train, validate = train_test_split(train_validate, 
                                        test_size=.25, 
-                                       random_state=123, 
-                                       stratify=train_validate[target])
+                                       random_state=123)
     return train, validate, test
 
 
+def scaled_df(train, validate, test):
+
+    X_train = train[['bedrooms','bathrooms','sqft','built','tax','Orange','Ventura']]
+    X_validate = validate[['bedrooms','bathrooms','sqft','built','tax','Orange','Ventura']]
+    X_test = test[['bedrooms','bathrooms','sqft','built','tax','Orange','Ventura']]
+
+    y_train = train.taxvalue
+    y_validate = validate.taxvalue
+    y_test = test.taxvalue
+
+    #making our scaler
+    scaler = MinMaxScaler()
+    #fitting our scaler 
+    # AND!!!!
+    #using the scaler on train
+    X_train_scaled = scaler.fit_transform(X_train)
+    #using our scaler on validate
+    X_validate_scaled = scaler.transform(X_validate)
+    #using our scaler on test
+    X_test_scaled = scaler.transform(X_test)
+
+    # Convert the array to a DataFrame
+    df_X_train_scaled = pd.DataFrame(X_train_scaled)
+    X_train_scaled = df_X_train_scaled.rename(columns={0: 'bedrooms', 1: 'bathrooms', 2: 'sqft', 3: 'built', 4: 'tax', 5: 'Orange', 6:'Ventura'})
+
+    # Convert the array to a DataFrame
+    df_X_validate_scaled = pd.DataFrame(X_validate_scaled)
+    X_validate_scaled = df_X_validate_scaled.rename(columns={0: 'bedrooms', 1: 'bathrooms', 2: 'sqft', 3: 'built', 4: 'tax', 5: 'Orange', 6:'Ventura'})
+    
+    # Convert the array to a DataFrame
+    df_X_test_scaled = pd.DataFrame(X_test_scaled)
+    X_test_scaled = df_X_test_scaled.rename(columns={0: 'bedrooms', 1: 'bathrooms', 2: 'sqft', 3: 'built', 4: 'tax', 5: 'Orange', 6:'Ventura'})
+    
+    return X_train_scaled, X_validate_scaled, X_test_scaled, y_train, y_validate, y_test
