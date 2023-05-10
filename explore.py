@@ -13,7 +13,7 @@ import wrangle as w
 
 def plot_variable_pairs(train):
     sns.set(style="ticks")
-    sns.pairplot(train, kind="reg", corner = True, plot_kws={'line_kws': {'color':'red'}})
+    sns.pairplot(train, kind="reg", corner = True, hue='fips', plot_kws={'line_kws': {'color': 'red'}})
     plt.show()
 
 
