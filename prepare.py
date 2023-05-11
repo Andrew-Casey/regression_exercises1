@@ -17,7 +17,7 @@ def split_data(df):
     '''
     train_validate, test = train_test_split(df, test_size=.2, random_state=123)
     train, validate = train_test_split(train_validate, 
-                                       test_size=.25, 
+                                       test_size=.3, 
                                        random_state=123)
     return train, validate, test
 
@@ -44,16 +44,13 @@ def scaled_df(train, validate, test):
     X_test_scaled = scaler.transform(X_test)
 
     # Convert the array to a DataFrame
-    df_X_train_scaled = pd.DataFrame(X_train_scaled)
-    X_train_scaled = df_X_train_scaled.rename(columns={0: 'bedrooms', 1: 'bathrooms', 2: 'sqft', 3: 'built', 4: 'Orange', 5:'Ventura'})
+    X_train_scaled = pd.DataFrame(X_train_scaled, columns=X_train.columns, index=X_train.index)
 
     # Convert the array to a DataFrame
-    df_X_validate_scaled = pd.DataFrame(X_validate_scaled)
-    X_validate_scaled = df_X_validate_scaled.rename(columns={0: 'bedrooms', 1: 'bathrooms', 2: 'sqft', 3: 'built', 4: 'Orange', 5:'Ventura'})
+    X_validate_scaled = pd.DataFrame(X_validate_scaled, columns=X_validate.columns, index=X_validate.index)
     
     # Convert the array to a DataFrame
-    df_X_test_scaled = pd.DataFrame(X_test_scaled)
-    X_test_scaled = df_X_test_scaled.rename(columns={0: 'bedrooms', 1: 'bathrooms', 2: 'sqft', 3: 'built', 4: 'Orange', 5:'Ventura'})
+    X_test_scaled = pd.DataFrame(X_test_scaled,columns=X_test.columns, index=X_test.index)
     
     return X_train_scaled, X_validate_scaled, X_test_scaled, y_train, y_validate, y_test
 
@@ -79,20 +76,15 @@ def scaled_df_tips(train, validate, test):
     X_test_scaled = scaler.transform(X_test)
 
     # Convert the array to a DataFrame
-    df_X_train_scaled = pd.DataFrame(X_train_scaled)
-    X_train_scaled = df_X_train_scaled.rename(columns={0: 'total_bill', 1: 'sex', 2: 'smoker', 3: 'time', 4:'size', 5:'price_per_person', 6:'Fri', 7:'Sat', 8:'Sun', 9:'Thur'})
+    X_train_scaled = pd.DataFrame(X_train_scaled, columns=X_train.columns, index=X_train.index)
 
     # Convert the array to a DataFrame
-    df_X_validate_scaled = pd.DataFrame(X_validate_scaled)
-    X_validate_scaled = df_X_validate_scaled.rename(columns={0: 'total_bill', 1: 'sex', 2: 'smoker', 3: 'time', 4:'size', 5:'price_per_person', 6:'Fri', 7:'Sat', 8:'Sun', 9:'Thur'})
+    X_validate_scaled = pd.DataFrame(X_validate_scaled, columns=X_validate.columns, index=X_validate.index)
     
     # Convert the array to a DataFrame
-    df_X_test_scaled = pd.DataFrame(X_test_scaled)
-    X_test_scaled = df_X_test_scaled.rename(columns={0: 'total_bill', 1: 'sex', 2: 'smoker', 3: 'time', 4:'size', 5:'price_per_person', 6:'Fri', 7:'Sat', 8:'Sun', 9:'Thur'})
+    X_test_scaled = pd.DataFrame(X_test_scaled,columns=X_test.columns, index=X_test.index)
     
     return X_train_scaled, X_validate_scaled, X_test_scaled, y_train, y_validate, y_test
-
-	
 
 def scaled_df_swiss(train, validate, test):
 
@@ -116,15 +108,12 @@ def scaled_df_swiss(train, validate, test):
     X_test_scaled = scaler.transform(X_test)
 
     # Convert the array to a DataFrame
-    df_X_train_scaled = pd.DataFrame(X_train_scaled)
-    X_train_scaled = df_X_train_scaled.rename(columns={0: 'Agriculture', 1: 'Examination', 2: 'Education', 3: 'Catholic', 4:'Infant.Mortality'})
+    X_train_scaled = pd.DataFrame(X_train_scaled, columns=X_train.columns, index=X_train.index)
 
     # Convert the array to a DataFrame
-    df_X_validate_scaled = pd.DataFrame(X_validate_scaled)
-    X_validate_scaled = df_X_validate_scaled.rename(columns={0: 'Agriculture', 1: 'Examination', 2: 'Education', 3: 'Catholic', 4:'Infant.Mortality'})
+    X_validate_scaled = pd.DataFrame(X_validate_scaled, columns=X_validate.columns, index=X_validate.index)
     
     # Convert the array to a DataFrame
-    df_X_test_scaled = pd.DataFrame(X_test_scaled)
-    X_test_scaled = df_X_test_scaled.rename(columns={0: 'Agriculture', 1: 'Examination', 2: 'Education', 3: 'Catholic', 4:'Infant.Mortality'})
+    X_test_scaled = pd.DataFrame(X_test_scaled,columns=X_test.columns, index=X_test.index)
     
     return X_train_scaled, X_validate_scaled, X_test_scaled, y_train, y_validate, y_test
