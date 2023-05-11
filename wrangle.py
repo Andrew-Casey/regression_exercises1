@@ -30,8 +30,7 @@ def get_zillow():
                        bathroomcnt, 
                        calculatedfinishedsquarefeet, 
                        taxvaluedollarcnt, 
-                       yearbuilt, 
-                       taxamount, 
+                       yearbuilt,  
                        fips
                 from properties_2017
                     join propertylandusetype using (propertylandusetypeid)
@@ -73,10 +72,10 @@ def wrangle_zillow():
                         , 'bathroomcnt': 'bathrooms'
                         , 'calculatedfinishedsquarefeet': 'sqft'
                         , 'taxvaluedollarcnt':'taxvalue'
-                        ,'yearbuilt': 'built'
-                        , 'taxamount':'tax'})
+                        ,'yearbuilt': 'built'})
     # change fips codes to county name
     df['fips'] = df['fips'].replace([6037.0, 6059.0, 6111.0],['LA','Orange','Ventura']).astype(str)
+
 
     #move my target variable taxvalue to the 1st column in the dataframe
     column_to_move = df.pop("taxvalue")
@@ -91,7 +90,6 @@ def wrangle_zillow():
     #handle outliers
     df = df[df.taxvalue <= 2000000]  
     df = df[df.sqft <= 5000]
-    df = df[df.tax <= 30000]
 
     return df
 
