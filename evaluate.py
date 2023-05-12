@@ -105,7 +105,7 @@ def run_regression1(df, target_var):
 
         print(f'RMSE: {rmse:.2f}, R^2: {r2:.2f} for {combo}')
 
-    sns.regplot(x=y_pred, y=y, line_kws={'color':'red'}, scatter_kws={'alpha':0.2})
+    sns.regplot(x=y_pred, y=y, line_kws={'color':'red'}, scatter_kws={'alpha':0.06})
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
     plt.show()
@@ -114,5 +114,11 @@ def run_regression1(df, target_var):
     print(f'Best R^2: {best_r2:.2f} for {best_r2_combo}')
     return best_r2_combo
 
-
+def metrics_reg(y, yhat):
+    """
+    send in y_true, y_pred & returns RMSE, R2
+    """
+    rmse = mean_squared_error(y, yhat, squared=False)
+    r2 = r2_score(y, yhat)
+    return rmse, r2
 
